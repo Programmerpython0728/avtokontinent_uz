@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans 'Tasdiqlash kodi' %} - AvtoKontinent.uz{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="text-center">{% trans 'Tasdiqlash kodi' %}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-mobile-alt fa-3x text-success"></i>
+                        <p class="mt-2">
+                            {% trans 'Telegram bot orqali' %} <strong>{{ phone_number }}</strong>
+                            {% trans 'raqamiga tasdiqlash kodi yuborildi' %}
+                        </p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="code" class="form-label">{% trans '5 xonali tasdiqlash kodi' %}</label>
+                            <input type="text" class="form-control text-center" id="code" name="code"
+                                   maxlength="5" placeholder="12345" required style="font-size: 1.5rem; letter-spacing: 0.5rem;">
+                            <div class="form-text">
+                                {% trans 'Telegram botdan kelgan 5 xonali kodni kiriting' %}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-check"></i> {% trans 'Tasdiqlash' %}
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted">{% trans 'Kod kelmadimi?' %}</p>
+                        <a href="{{ telegram_bot_url }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fab fa-telegram"></i> {% trans 'Telegram botni ochish' %}
+                        </a>
+                        <br><br>
+                        <a href="{% url 'accounts:login' %}" class="text-primary">
+                            {% trans 'Boshqa raqam bilan kirish' %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('code').addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+    if (this.value.length === 5) {
+        this.form.submit();
+    }
+});
+</script>
+{% endblock %}

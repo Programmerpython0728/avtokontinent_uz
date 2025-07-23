@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ product.name_uz }} - AvtoKontinent.uz{% endblock %}
+
+{% block extra_css %}
+<style>
+  .product-gallery img {
+      max-height: 400px;
+      object-fit: contain;
+      border: 1px solid #eee;
+      border-radius: 8px;
+  }
+  .thumbnail-gallery img {
+      height: 80px;
+      width: 80px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      transition: border-color 0.2s;
+  }
+  .thumbnail-gallery img:hover, .thumbnail-gallery img.active {
+      border-color: var(--primary-color);
+  }
+  .comment-section .card-body {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+  }
+  .comment-section .card-body:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+  }
+  .rating .fas {
+      color: #ffc107; /* Star color */
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+      <div class="col-md-6">
+          <div class="product-gallery mb-4">
+              <img id="mainProductImage" src="{{ product.image.url }}" alt="{{ product.name_uz }}" class="img-fluid">
+              <div class="thumbnail-gallery d-flex mt-3 overflow-auto">
+                  <img src="{{ product.image.url }}" class="me-2 active" alt="Main image">
+                  {% for img in product.productimage_set.all %}
+                      <img src="{{ img.image.url }}" class="me-2" alt="{{ img.alt_text|default:product.name_uz }}">
+                  {% endfor %}
+              </div>
+          </div>
+          {% if product.video_url %}
+          <div class="product-video mb-4">
+              <h5>{% trans 'Mahsulot videosi' %}</h5>
+              <div class="ratio ratio-16x9">
+                  <iframe src="https://www.youtube.com/embed/{{ product.video_url|cut:'https://www.youtube.com/watch?v=' }}"
+                          title="YouTube video player" frameborder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+          </div>
+          {% endif %}
+      </div>
+      <div class="col-md-6">
+          <h1>{{ product.name_uz }}</h1>
+          <p class="lead text-muted">{{ product.name_ru }}</p>
+
+          <div class="product-price mb-3">
+              <span class="h2 text-primary fw-bold">${{ product.price_usd }}</span>
+              <span class="h4 text-muted ms-3">≈ {{ product.get_price_uzs|floatformat:0 }} {% trans 'so\'m' %}</span>
+          </div>
+
+          <div class="product-meta mb-3">
+              <p><strong>{% trans 'Kategoriya' %}:</strong> <a href="{{ product.category.get_absolute_url }}">{{ product.category.name_uz }}</a></p>
+              {% if product.car_brands.exists %}
+              <p><strong>{% trans 'Avtomobil brendlari' %}:</strong>
+                  {% for brand in product.car_brands.all %}
+                      <a href="{% url 'shop:car_brand_detail' brand.slug %}">{{ brand.name }}</a>{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+              </p>
+              {% endif %}
+              {% if product.car_models.exists %}
+              <p><strong>{% trans 'Avtomobil modellari' %}:</strong>
+                  {% for model in product.car_models.all %}
+                      <a href="{% url 'shop:car_model_parts' model.brand.slug model.slug %}">{{ model.brand.name }} {{ model.name }}</a>{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+              </p>
+              {% endif %}
+              <p><strong>{% trans 'Ko\'rilgan' %}:</strong> {{ product.views_count }}</p>
+          </div>
+
+          <div class="product-description mb-4">
+              <h3>{% trans 'Tavsif' %}</h3>
+              <p>{{ product.description_uz|linebreaksbr }}</p>
+              <p class="text-muted">{{ product.description_ru|linebreaksbr }}</p>
+          </div>
+
+          <div class="product-actions d-flex align-items-center mb-4">
+              <button class="btn btn-primary btn-lg me-3 add-to-cart" data-add-to-cart-url="{% url 'orders:add_to_cart' product.id %}">
+                  <i class="fas fa-shopping-cart"></i> {% trans 'Savatga qo\'shish' %}
+              </button>
+              {% if user.is_authenticated %}
+              <button class="btn btn-outline-danger btn-lg wishlist-btn {% if user_wishlisted %}active{% endif %}"
+                      data-toggle-wishlist-url="{% url 'shop:toggle_wishlist' product.id %}"
+                      title="{% if user_wishlisted %}{% trans 'Sevimlilardan olib tashlash' %}{% else %}{% trans 'Sevimlilarga qo\'shish' %}{% endif %}">
+                  <i class="fas fa-heart {% if user_wishlisted %}text-danger{% endif %}"></i>
+              </button>
+              <button class="btn btn-outline-primary btn-lg ms-2 like-btn"
+                      data-toggle-like-url="{% url 'shop:toggle_like' product.id %}"
+                      title="{% if user_liked %}{% trans 'Yoqtirmaslik' %}{% else %}{% trans 'Yoqtirish' %}{% endif %}">
+                  <i class="fas fa-thumbs-up {% if user_liked %}text-primary{% endif %}"></i>
+                  <span class="likes-count">{{ product.get_likes_count }}</span>
+              </button>
+              {% endif %}
+          </div>
+      </div>
+  </div>
+
+  <hr class="my-5">
+
+  <div class="row">
+      <div class="col-12">
+          <h3>{% trans 'Izohlar' %} ({{ product.get_comments_count }})</h3>
+          {% if user.is_authenticated %}
+          <div class="card mb-4">
+              <div class="card-header">
+                  <h5>{% trans 'Izoh qoldirish' %}</h5>
+              </div>
+              <div class="card-body">
+                  <form action="{% url 'shop:add_comment' product.id %}" method="post">
+                      {% csrf_token %}
+                      <div class="mb-3">
+                          <label for="commentText" class="form-label">{% trans 'Sizning izohingiz' %}</label>
+                          <textarea class="form-control" id="commentText" name="comment" rows="3" required></textarea>
+                      </div>
+                      <div class="mb-3">
+                          <label for="rating" class="form-label">{% trans 'Reyting' %}</label>
+                          <select class="form-select" id="rating" name="rating">
+                              <option value="5">5 - {% trans 'A\'lo' %}</option>
+                              <option value="4">4 - {% trans 'Yaxshi' %}</option>
+                              <option value="3">3 - {% trans 'O\'rtacha' %}</option>
+                              <option value="2">2 - {% trans 'Yomon' %}</option>
+                              <option value="1">1 - {% trans 'Juda yomon' %}</option>
+                          </select>
+                      </div>
+                      <button type="submit" class="btn btn-primary">
+                          <i class="fas fa-paper-plane"></i> {% trans 'Izoh qoldirish' %}
+                      </button>
+                  </form>
+              </div>
+          </div>
+          {% else %}
+          <div class="alert alert-info text-center">
+              <i class="fas fa-info-circle"></i> {% trans 'Izoh qoldirish uchun' %} <a href="{% url 'accounts:login' %}">{% trans 'kirishingiz' %}</a> {% trans 'kerak.' %}
+          </div>
+          {% endif %}
+
+          <div class="comment-section">
+              {% for comment in comments %}
+              <div class="card mb-3">
+                  <div class="card-body">
+                      <h6 class="card-title">{{ comment.user.first_name|default:comment.user.username }}
+                          <small class="text-muted ms-2">{{ comment.created_at|date:"d M Y H:i" }}</small>
+                      </h6>
+                      <div class="rating mb-2">
+                          {% for i in "12345"|make_list %}
+                              {% if forloop.counter <= comment.rating %}
+                                  <i class="fas fa-star"></i>
+                              {% else %}
+                                  <i class="far fa-star"></i>
+                              {% endif %}
+                          {% endfor %}
+                      </div>
+                      <p class="card-text">{{ comment.comment }}</p>
+                      {% if comment.admin_reply %}
+                      <div class="alert alert-secondary mt-3">
+                          <strong>{% trans 'Admin javobi' %}:</strong> {{ comment.admin_reply }}
+                      </div>
+                      {% endif %}
+                  </div>
+              </div>
+              {% empty %}
+              <div class="alert alert-info text-center">
+                  {% trans 'Bu mahsulotga hali izohlar qoldirilmagan.' %}
+              </div>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+
+  {% if related_products %}
+  <hr class="my-5">
+  <div class="row">
+      <div class="col-12">
+          <h3>{% trans 'O\'xshash mahsulotlar' %}</h3>
+          <div class="row">
+              {% for product in related_products %}
+              <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                  {% include 'shop/product_card.html' %}
+              </div>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+  {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+  // Product image gallery
+  $('.thumbnail-gallery img').click(function() {
+      const newSrc = $(this).attr('src');
+      $('#mainProductImage').attr('src', newSrc);
+      $('.thumbnail-gallery img').removeClass('active');
+      $(this).addClass('active');
+  });
+
+  // Like button functionality
+  $('.like-btn').click(function() {
+      const url = $(this).data('toggle-like-url');
+      const button = $(this);
+      const icon = button.find('i');
+      const likesCountSpan = button.find('.likes-count');
+
+      console.log("Like button clicked. URL:", url); // Debugging log
+
+      $.post(url, {
+          csrfmiddlewaretoken: window.CSRF_TOKEN // Global CSRF token
+      }, function(data) {
+          if (data.liked) {
+              icon.addClass('text-primary');
+              showNotification('Mahsulot yoqtirilganlarga qo\'shildi!', 'success');
+          } else {
+              icon.removeClass('text-primary');
+              showNotification('Mahsulot yoqtirilganlardan olib tashlandi!', 'info');
+          }
+          likesCountSpan.text(data.likes_count);
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+          console.error("Like AJAX error:", textStatus, errorThrown, jqXHR.responseText); // Detailed error log
+          showNotification('Xatolik yuz berdi!', 'error');
+      });
+  });
+});
+</script>
+{% endblock %}
+{% endblock %}

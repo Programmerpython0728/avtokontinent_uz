@@ -1,0 +1,28 @@
+{% extends 'custom_admin/base_admin.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Kategoriyani o\'chirish' %}{% endblock %}
+{% block page_title %}{% trans 'Kategoriyani o\'chirish' %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">{% trans 'Kategoriyani o\'chirishni tasdiqlash' %}</h5>
+    </div>
+    <div class="card-body">
+        <p>{% trans 'Siz haqiqatan ham' %} "<strong>{{ category.name_uz }}</strong>" {% trans 'kategoriyasini o\'chirmoqchimisiz?' %}</p>
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> {% trans 'Bu kategoriya bilan bog\'liq barcha mahsulotlar ham o\'chirilishi mumkin (model sozlamalariga qarab).' %}
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash-alt"></i> {% trans 'O\'chirishni tasdiqlash' %}
+            </button>
+            <a href="{% url 'custom_admin:category_list' %}" class="btn btn-secondary ms-2">
+                <i class="fas fa-arrow-left"></i> {% trans 'Bekor qilish' %}
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

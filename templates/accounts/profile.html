@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans 'Mening profilim' %} - AvtoKontinent.uz{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="text-center mb-0">{% trans 'Mening profilim' %}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">{% trans 'Ism' %}</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name"
+                                   value="{{ user.first_name|default:'' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">{% trans 'Familiya' %}</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name"
+                                   value="{{ user.last_name|default:'' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">{% trans 'Telefon raqam' %}</label>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number"
+                                   value="{{ profile.phone_number|default:'' }}" readonly disabled>
+                            <div class="form-text">{% trans 'Telefon raqamini o\'zgartirish mumkin emas.' %}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">{% trans 'Manzil' %}</label>
+                            <textarea class="form-control" id="address" name="address" rows="3">{{ profile.address|default:'' }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telegram_chat_id" class="form-label">Telegram Chat ID</label>
+                            <input type="text" class="form-control" id="telegram_chat_id" name="telegram_chat_id"
+                                   value="{{ profile.telegram_chat_id|default:'' }}" readonly disabled>
+                            <div class="form-text">{% trans 'Bu sizning Telegram bot bilan bog\'langan ID raqamingiz.' %}</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            <i class="fas fa-save"></i> {% trans 'Saqlash' %}
+                        </button>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'orders:order_list' %}" class="btn btn-outline-info">
+                            <i class="fas fa-box"></i> {% trans 'Mening buyurtmalarim' %}
+                        </a>
+                        <a href="{% url 'shop:wishlist' %}" class="btn btn-outline-danger ms-2">
+                            <i class="fas fa-heart"></i> {% trans 'Sevimlilarim' %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

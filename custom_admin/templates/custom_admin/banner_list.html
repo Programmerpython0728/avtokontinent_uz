@@ -1,0 +1,133 @@
+{% extends 'custom_admin/base_admin.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Banner Ro'yxati" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    {# Xabar (success/error messages) #}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show alert-sm" role="alert"> {# alert-sm qo'shildi #}
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">{% trans "Banner Ro'yxati" %} (Jami: {{ total_banners }})</h6> {# Shu yerga qo'shildi #}
+    <a href="{% url 'custom_admin:banner_create' %}" class="btn btn-success btn-sm">
+        <i class="fas fa-plus"></i> {% trans "Yangi banner qo'shish" %}
+    </a>
+</div>
+        <div class="card-body">
+            {# Qidiruv qismi #}
+            <div class="d-flex justify-content-end mb-3">
+                <form class="d-flex align-items-center" method="GET" action="">
+                    <div class="input-group input-group-sm"> {# input-group-sm qo'shildi #}
+                        <input type="search" class="form-control" placeholder="{% trans 'Sarlavha (Uzbek) yoki (Russian)' %}" aria-label="Search" name="q" value="{{ query|default_if_none:'' }}">
+                        <button type="submit" class="btn btn-primary btn-sm">{% trans "Qidirish" %}</button> {# btn-sm qo'shildi #}
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                {# Jadvalni yanada ixcham qilish uchun table-sm qo'shildi #}
+                <table class="table table-bordered table-striped table-sm" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">ID</th> {# Kengliklar berildi #}
+                            <th style="width: 20%;">{% trans "Sarlavha (O'zbek)" %}</th>
+                            <th style="width: 20%;">{% trans "Sarlavha (Ruscha)" %}</th>
+                            <th style="width: 15%;">{% trans "Rasm" %}</th>
+                            <th style="width: 15%;">{% trans "Havola" %}</th>
+                            <th style="width: 5%;">{% trans "Tartib" %}</th>
+                            <th style="width: 10%;">{% trans "Holati" %}</th>
+                            <th style="width: 10%;">{% trans "Amallar" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for banner in page_obj %}
+                        <tr>
+                            <td>{{ banner.pk }}</td>
+                            <td>{{ banner.title_uz }}</td>
+                            <td>{{ banner.title_ru }}</td>
+                            <td>
+                                {% if banner.image %}
+                                <img src="{{ banner.image.url }}" alt="Banner Image" style="width: 50px; height: auto; border-radius: 3px;"> {# Rasm o'lchami kichraytirildi #}
+                                {% else %}
+                                <small>{% trans "Rasm yo'q" %}</small>
+                                {% endif %}
+                            </td>
+                            <td class="text-truncate" style="max-width: 150px;">{{ banner.link|default:"-" }}</td> {# Uzun linklar uchun #}
+                            <td>{{ banner.order }}</td>
+                            <td>
+                                {% if banner.is_active %}
+                                <span class="badge bg-success">{% trans "Faol" %}</span>
+                                {% else %}
+                                <span class="badge bg-danger">{% trans "Faol emas" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'custom_admin:banner_edit' banner.pk %}" class="btn btn-info btn-circle btn-sm" title="{% trans 'Tahrirlash' %}"> {# btn-circle btn-sm qo'shildi #}
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'custom_admin:banner_delete' banner.pk %}" class="btn btn-danger btn-circle btn-sm" title="{% trans 'O\'chirish' %}"> {# btn-circle btn-sm qo'shildi #}
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">{% trans "Hozircha hech qanday banner topilmadi." %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {# Pagination controls #}
+            <div class="row">
+                <div class="col-sm-12 col-md-5">
+                    <div class="dataTables_info small" id="dataTable_info" role="status" aria-live="polite"> {# small klassi qo'shildi #}
+                        {% if page_obj %}
+                        {% blocktrans with start=page_obj.start_index end=page_obj.end_index total=paginator.count %}
+                        {{ start}}-{{ end}} dan {{ total}} gacha ko'rsatilmoqda
+                        {% endblocktrans %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-7">
+                    <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                        <ul class="pagination pagination-sm"> {# pagination-sm qo'shildi #}
+                            {% if page_obj.has_previous %}
+                                <li class="paginate_button page-item previous">
+                                    <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">{% trans "Oldingi" %}</a>
+                                </li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">{{ i }}</a></li>
+                                {% else %}
+                                    <li class="paginate_button page-item "><a href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}" aria-controls="dataTable" data-dt-idx="2" tabindex="0" class="page-link">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="paginate_button page-item next">
+                                    <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">{% trans "Keyingi" %}</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

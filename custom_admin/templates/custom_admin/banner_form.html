@@ -1,0 +1,108 @@
+{% extends 'custom_admin/base_admin.html' %}
+{% load i18n %}
+
+{% block title %}{% if form.instance.pk %}{% trans 'Bannerni tahrirlash' %}{% else %}{% trans 'Yangi banner qo\'shish' %}{% endif %}{% endblock %}
+{% block page_title %}{% if form.instance.pk %}{% trans 'Bannerni tahrirlash' %}{% else %}{% trans 'Yangi banner qo\'shish' %}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            {% if form.instance.pk %}
+                {% trans 'Bannerni tahrirlash' %}
+            {% else %}
+                {% trans 'Yangi banner qo\'shish' %}
+            {% endif %}
+        </h3>
+    </div>
+    <form method="post" enctype="multipart/form-data"> {# Rasm yuklash uchun enctype muhim! #}
+        {% csrf_token %}
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.title_uz.id_for_label }}">{% trans 'Sarlavha (O\'zbekcha)' %}</label>
+                        {{ form.title_uz }}
+                        {% if form.title_uz.errors %}
+                        <div class="text-danger">{{ form.title_uz.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.title_ru.id_for_label }}">{% trans 'Sarlavha (Ruscha)' %}</label>
+                        {{ form.title_ru }}
+                        {% if form.title_ru.errors %}
+                        <div class="text-danger">{{ form.title_ru.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.image.id_for_label }}">{% trans 'Rasm' %}</label>
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                        <div class="text-danger">{{ form.image.errors }}</div>
+                        {% endif %}
+                        {% if form.instance.image %}
+                        <div class="mt-2">
+                            <img src="{{ form.instance.image.url }}" alt="Current image" style="max-height: 100px;">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.link.id_for_label }}">{% trans 'Havola' %}</label>
+                        {{ form.link }}
+                        {% if form.link.errors %}
+                        <div class="text-danger">{{ form.link.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.order.id_for_label }}">{% trans 'Tartib raqami' %}</label>
+                        {{ form.order }}
+                        {% if form.order.errors %}
+                        <div class="text-danger">{{ form.order.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>{% trans 'Holati' %}</label>
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                {% trans 'Faol' %}
+                            </label>
+                        </div>
+                        {% if form.is_active.errors %}
+                        <div class="text-danger">{{ form.is_active.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {# Umumiy forma xatolari #}
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary">{% trans 'Saqlash' %}</button>
+            <a href="{% url 'custom_admin:banner_list' %}" class="btn btn-default">{% trans 'Bekor qilish' %}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

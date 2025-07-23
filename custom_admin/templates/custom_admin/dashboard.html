@@ -1,0 +1,167 @@
+{% extends 'custom_admin/base_admin.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Dashboard' %}{% endblock %}
+{% block page_title %}{% trans 'Dashboard' %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    {# Jami Kategoriyalar #}
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-primary shadow h-100 py-2"> {# Added shadow, h-100, py-2 for consistency #}
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title text-uppercase mb-1">{% trans 'Jami Kategoriyalar' %}</h5> {# text-uppercase, mb-1 for aesthetics #}
+                        <h2 class="display-4 font-weight-bold">{{ total_categories }}</h2> {# font-weight-bold #}
+                    </div>
+                    <i class="fas fa-sitemap fa-3x text-white-50"></i> {# text-white-50 for subtle icon #}
+                </div>
+                <a href="{% url 'custom_admin:category_list' %}" class="text-white-75 text-decoration-none stretched-link"> {# text-white-75 for subtle link #}
+                    {% trans 'Batafsil' %} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Jami Mahsulotlar #}
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title text-uppercase mb-1">{% trans 'Jami Mahsulotlar' %}</h5>
+                        <h2 class="display-4 font-weight-bold">{{ total_products }}</h2>
+                    </div>
+                    <i class="fas fa-box fa-3x text-white-50"></i>
+                </div>
+                <a href="{% url 'custom_admin:product_list' %}" class="text-white-75 text-decoration-none stretched-link">
+                    {% trans 'Batafsil' %} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Avto Brendlar #}
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title text-uppercase mb-1">{% trans 'Avto Brendlar' %}</h5>
+                        <h2 class="display-4 font-weight-bold">{{ total_car_brands }}</h2>
+                    </div>
+                    <i class="fas fa-car fa-3x text-white-50"></i>
+                </div>
+                <a href="{% url 'custom_admin:car_brand_list' %}" class="text-white-75 text-decoration-none stretched-link">
+                    {% trans 'Batafsil' %} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Avto Modellar #}
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title text-uppercase mb-1">{% trans 'Avto Modellar' %}</h5>
+                        <h2 class="display-4 font-weight-bold">{{ total_car_models }}</h2>
+                    </div>
+                    <i class="fas fa-car-side fa-3x text-white-50"></i>
+                </div>
+                <a href="{% url 'custom_admin:car_model_list' %}" class="text-white-75 text-decoration-none stretched-link">
+                    {% trans 'Batafsil' %} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {# Jami Buyurtmalar #}
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-dark shadow h-100 py-2">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title text-uppercase mb-1">{% trans 'Jami Buyurtmalar' %}</h5>
+                        <h2 class="display-4 font-weight-bold">{{ total_orders }}</h2>
+                    </div>
+                    <i class="fas fa-receipt fa-3x text-white-50"></i>
+                </div>
+                <a href="{% url 'custom_admin:order_list' %}" class="text-white-75 text-decoration-none stretched-link">
+                    {% trans 'Batafsil' %} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Kutilayotgan Buyurtmalar #}
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title text-uppercase mb-1">{% trans 'Kutilayotgan Buyurtmalar' %}</h5>
+                        <h2 class="display-4 font-weight-bold">{{ pending_orders }}</h2>
+                    </div>
+                    <i class="fas fa-hourglass-half fa-3x text-white-50"></i>
+                </div>
+                <a href="{% url 'custom_admin:order_list' %}?status=pending" class="text-white-75 text-decoration-none stretched-link">
+                    {% trans 'Batafsil' %} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# To'lov kartalari #}
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-secondary shadow h-100 py-2"> {# bg-secondary rangi berildi #}
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title text-uppercase mb-1">{% trans 'To\'lov kartalari' %}</h5>
+                        <h2 class="display-4 font-weight-bold">{{ total_payment_cards|default:0 }}</h2>
+                    </div>
+                    <i class="fas fa-credit-card fa-3x text-white-50"></i>
+                </div>
+                <a href="{% url 'custom_admin:payment_card_list' %}" class="text-white-75 text-decoration-none stretched-link">
+                    {% trans 'Batafsil' %} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Bannerlar #}
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-primary shadow h-100 py-2"> {# bg-primary rangi berildi #}
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title text-uppercase mb-1">{% trans 'Bannerlar' %}</h5>
+                        <h2 class="display-4 font-weight-bold">{{ total_banners|default:0 }}</h2>
+                    </div>
+                    <i class="fas fa-image fa-3x text-white-50"></i>
+                </div>
+                <a href="{% url 'custom_admin:banner_list' %}" class="text-white-75 text-decoration-none stretched-link">
+                    {% trans 'Batafsil' %} <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">{% trans 'So\'nggi faoliyat' %}</h5>
+    </div>
+    <div class="card-body">
+        <p>{% trans 'Bu yerda so\'nggi buyurtmalar, izohlar yoki boshqa muhim voqealar ko\'rsatiladi.' %}</p>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> {% trans 'Hozircha faoliyatlar mavjud emas.' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

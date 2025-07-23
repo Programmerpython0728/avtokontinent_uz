@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}AvtoKontinent.uz - Avto ehtiyot qismlar onlayn do'koni{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container hero-container">
+    <div class="hero-text">
+      <h1 class="hero-title">AvtoKontinent.uz</h1>
+      <p class="hero-subtitle">
+        O'zbekistondagi eng yirik avto ehtiyot qismlar onlayn do'koni
+      </p>
+
+    </div>
+    <div class="hero-image">
+
+    </div>
+  </div>
+</section>
+
+
+<!-- Banners Section -->
+{% if banners %}
+<section class="banners-section py-3">
+    <div class="container">
+        <div id="bannersCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="carousel-inner">
+                {% for banner in banners %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ banner.image.url|default:'/placeholder.svg?height=350&width=1200&text=Banner+Image' }}"
+                         class="d-block w-100"
+                         alt="{{ banner.title_uz }}"
+                         style="max-height: 350px; object-fit: cover; border-radius: 8px;">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>{{ banner.title_uz }}</h5>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if banners|length > 1 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#bannersCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#bannersCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Categories -->
+<section id="categories" class="categories-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Kategoriyalar</h2>
+        <div class="row justify-content-center">
+            {% for category in categories %}
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
+                <div class="category-card text-center h-100">
+                    <a href="{{ category.get_absolute_url }}" class="text-decoration-none">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <div class="category-icon mb-3">
+                                    <img src="{{ category.image.url|default:'/placeholder.svg?height=120&width=120&text=Category' }}"
+                                         alt="{{ category.name_uz }}"
+                                         class="img-fluid category-img-large">
+                                </div>
+                                <h5 class="card-title text-dark mt-3">{{ category.name_uz }}</h5>
+                                <p class="card-text text-muted">{{ category.name_ru }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <h4><i class="fas fa-info-circle"></i> Kategoriyalar hali qo'shilmagan</h4>
+                    <p>Admin paneldan kategoriyalar qo'shing</p>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Car Brands & Models -->
+{% if car_brands %}
+<section class="car-brands-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Avtomobil brendlari</h2>
+        <div class="row justify-content-center">
+            {% for brand in car_brands %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 shadow-sm text-center">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        {% if brand.logo %}
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="height: 70px;" class="mb-3">
+                        {% else %}
+                            <i class="fas fa-car fa-4x text-primary mb-3"></i>
+                        {% endif %}
+                        <h5 class="card-title">{{ brand.name }}</h5>
+                        <a href="{% url 'shop:car_brand_detail' brand.slug %}" class="btn btn-outline-primary mt-auto">
+                            <i class="fas "></i> Modellarni ko'rish
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Products -->
+{% if featured_products %}
+<section class="featured-products py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-star text-warning"></i> Tavsiya qilingan mahsulotlar
+        </h2>
+        <div class="row">
+            {% for product in featured_products %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                {% include 'shop/product_card.html' %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Info Section -->
+<section class="info-section py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-shipping-fast fa-3x mb-3"></i>
+                <h4>Tez yetkazib berish</h4>
+                <p>2-3 kun ichida yetkazib beramiz</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-shield-alt fa-3x mb-3"></i>
+                <h4>Sifat kafolati</h4>
+                <p>Barcha mahsulotlar sertifikatlangan</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-headset fa-3x mb-3"></i>
+                <h4>24/7 qo'llab-quvvatlash</h4>
+                <p>Har doim sizning xizmatingizdamiz</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('.counter').each(function() {
+        const $this = $(this);
+        const target = parseInt($this.data('target'));
+        $({ counter: 0 }).animate({ counter: target }, {
+            duration: 2000,
+            easing: 'swing',
+            step: function() {
+                $this.text(Math.ceil(this.counter));
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

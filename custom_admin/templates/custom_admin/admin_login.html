@@ -1,0 +1,146 @@
+{% extends 'custom_admin/base_admin.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Admin Kirish' %}{% endblock %}
+{% block page_title %}{% trans 'Admin Kirish' %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex justify-content-center align-items-center min-vh-100 bg-light-gray">
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0 rounded-4 login-card">
+            <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top-4">
+                <h3 class="fw-bold mb-0">{% trans 'Admin Panelga Kirish' %}</h3>
+            </div>
+            <div class="card-body p-5">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {# Umumiy (non-field) xatolar uchun joy #}
+                    {% if form.non_field_errors %}
+                        <div class="text-danger text-center mb-4 fw-semibold animate__animated animate__shakeX">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                        <div class="mb-4 d-flex flex-column align-items-center">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold text-muted text-center w-100">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <div class="form-text text-muted small text-center w-100">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="text-danger small mt-1 text-center w-100 animate__animated animate__fadeIn">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill login-button">
+                            <i class="fas fa-sign-in-alt me-2"></i> {% trans 'Kirish' %}
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'shop:home' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-4 back-home-button">
+                        <i class="fas fa-home me-2"></i> {% trans 'Bosh sahifaga qaytish' %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Login sahifasi uchun maxsus stillar */
+    body.admin-login-page {
+        background-color: #f0f2f5 !important; /* Engilroq fon */
+    }
+    .bg-light-gray {
+        background-color: #f8f9fa; /* Yana ham engilroq fon */
+    }
+    .login-card {
+        border-radius: 1.5rem !important; /* Katta yumaloq burchaklar */
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1) !important; /* Kuchliroq, ammo yumshoq soya */
+        overflow: hidden; /* Headerning yumaloq burchaklari to'g'ri ko'rinishi uchun */
+        animation: fadeInScale 0.5s ease-out forwards; /* Kirish animatsiyasi */
+    }
+    .card-header.bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important; /* Gradient fon */
+        border-bottom: none;
+        border-top-left-radius: 1.5rem !important;
+        border-top-right-radius: 1.5rem !important;
+    }
+    .card-body {
+        padding: 3rem !important; /* Katta padding */
+    }
+    .form-label {
+        font-size: 1rem; /* Label shrift o'lchami */
+        font-weight: 600; /* Label qalinligi */
+        color: #343a40; /* To'qroq rang */
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-control {
+        border-radius: 0.75rem; /* Kichikroq yumaloq burchaklar */
+        padding: 0.85rem 1.2rem; /* Paddingni kattalashtirish */
+        border: 1px solid #ced4da;
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        max-width: 320px; /* Input kengligini cheklash */
+        text-align: center; /* Input ichidagi matnni markazga tekislash */
+        font-size: 1.1rem; /* Input matnining o'lchami */
+    }
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        outline: none; /* Fokusda outline ni olib tashlash */
+    }
+    .btn-primary.login-button {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        font-weight: 600;
+        padding: 0.85rem 1.5rem;
+        transition: all 0.3s ease;
+        letter-spacing: 0.05em; /* Harflar orasidagi bo'shliq */
+    }
+    .btn-primary.login-button:hover {
+        background: linear-gradient(45deg, #0056b3, #007bff);
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 123, 255, 0.2);
+    }
+    .btn-outline-secondary.back-home-button {
+        border-color: #6c757d;
+        color: #6c757d;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-secondary.back-home-button:hover {
+        background-color: #6c757d;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Animatsiyalar */
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    .animate__animated.animate__shakeX {
+        animation-duration: 0.8s;
+    }
+    .animate__animated.animate__fadeIn {
+        animation-duration: 0.5s;
+    }
+</style>
+{% endblock %}

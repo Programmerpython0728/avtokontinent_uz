@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans 'Kirish' %} - AvtoKontinent.uz{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="text-center">{% trans 'Saytga kirish' %}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fab fa-telegram fa-3x text-primary"></i>
+                        <p class="mt-2">{% trans 'Telegram bot orqali kirish' %}</p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">{% trans 'Telefon raqam' %}</label>
+                            <input type="tel" class="form-control" id="phone_number" name="phone_number"
+                                   placeholder="+998 91 525 07 28" required>
+                            <div class="form-text">
+                                {% trans 'Telefon raqamingizni kiriting va Telegram bot orqali tasdiqlash kodini oling' %}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fab fa-telegram"></i> {% trans 'Tasdiqlash kodini olish' %}
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <small class="text-muted">
+                            {% trans 'Telegram botimiz:' %}
+                            <a href="https://t.me/avtokontinent_1_bot " target="_blank" class="text-primary">
+                                <i class="fab fa-telegram"></i> AvtoKontinent Bot
+                            </a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

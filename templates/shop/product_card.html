@@ -1,0 +1,96 @@
+{% load static %}
+{% load i18n %}
+
+<div class="product-card h-100">
+  <div class="card h-100 shadow-sm">
+
+    <div class="product-image position-relative">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name_uz }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+      {% else %}
+        <div class="placeholder-image d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+          <i class="fas fa-image fa-3x text-muted"></i>
+        </div>
+      {% endif %}
+
+      <div class="product-badges position-absolute top-0 start-0 p-2">
+        {% if product.is_featured %}
+          <span class="badge bg-warning text-dark">
+            <i class="fas fa-star"></i> {% trans 'Tavsiya' %}
+          </span>
+        {% endif %}
+        {% if product.is_recommended %}
+          <span class="badge bg-success">
+            <i class="fas fa-thumbs-up"></i> {% trans 'Top' %}
+          </span>
+        {% endif %}
+      </div>
+
+      {% if user.is_authenticated %}
+        <div class="product-actions position-absolute top-0 end-0 p-2">
+          <button class="btn btn-sm btn-outline-danger wishlist-btn"
+                  data-toggle-wishlist-url="{% url 'shop:toggle_wishlist' product.id %}"
+                  data-product-id="{{ product.id }}"
+                  title="{% trans 'Sevimlilar ro\'yxatiga qo\'shish' %}">
+            <i class="{% if product in user.wishlist.products.all %}fas{% else %}far{% endif %} fa-heart"></i>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="card-body d-flex flex-column">
+      <h6 class="card-title">
+        <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark">
+          {{ product.name_uz|truncatechars:50 }}
+        </a>
+      </h6>
+
+      <p class="card-text text-muted small">
+        {{ product.description_uz|truncatechars:80 }}
+      </p>
+
+      <div class="product-price mb-2">
+        <span class="h5 text-primary fw-bold">${{ product.price_usd }}</span>
+        <small class="text-muted d-block">
+          {{ product.get_price_uzs|floatformat:0 }} {% trans 'so\'m' %}
+        </small>
+      </div>
+
+      <div class="product-stats mb-3">
+        <small class="text-muted">
+          <i class="fas fa-eye"></i> {{ product.views_count }}
+          <i class="fas fa-comments ms-2"></i> {{ product.get_comments_count }}
+        </small>
+      </div>
+
+      {% if product.car_brands.exists %}
+        <div class="car-compatibility mb-2">
+          <small class="text-info">
+            <i class="fas fa-car"></i>
+            {% for brand in product.car_brands.all|slice:":2" %}
+              {{ brand.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            {% if product.car_brands.count > 2 %}
+              {% trans 'va' %} {{ product.car_brands.count|add:"-2" }} {% trans 'ta boshqa' %}
+            {% endif %}
+          </small>
+        </div>
+      {% endif %}
+
+      <div class="mt-auto">
+        <div class="d-grid gap-2">
+          <button class="btn btn-primary add-to-cart" {# Klass nomi ozgartirildi #}
+                  data-add-to-cart-url="{% url 'orders:add_to_cart' product.id %}"
+                  data-product-id="{{ product.id }}">
+            <i class="fas fa-shopping-cart"></i> {% trans 'Savatga qo‘shish' %}
+          </button>
+
+          <a href="{{ product.get_absolute_url }}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-info-circle"></i> {% trans 'Batafsil' %}
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

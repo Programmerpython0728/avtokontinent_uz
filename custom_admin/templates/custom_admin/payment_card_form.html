@@ -1,0 +1,73 @@
+{% extends 'custom_admin/base_admin.html' %}
+{% load i18n %}
+
+{% block title %}{% if card.pk %}{% trans 'Kartani tahrirlash' %}{% else %}{% trans 'Yangi karta qo\'shish' %}{% endif %}{% endblock %}
+{% block page_title %}{% if card.pk %}{% trans 'Kartani tahrirlash' %}{% else %}{% trans 'Yangi karta qo\'shish' %}{% endif %}{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{% if card.pk %}{% trans 'Kartani tahrirlash' %}{% else %}{% trans 'Yangi karta qo\'shish' %}{% endif %}</h3>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card-body">
+            <div class="row">
+                {# "Foydalanuvchi" maydoni olib tashlandi #}
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.card_number.id_for_label }}" class="form-label">{% trans 'Karta raqami' %}</label>
+                        {{ form.card_number }}
+                        {% if form.card_number.errors %}
+                        <div class="text-danger">{{ form.card_number.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.card_holder.id_for_label }}" class="form-label">{% trans 'Karta egasi' %}</label>
+                        {{ form.card_holder }}
+                        {% if form.card_holder.errors %}
+                        <div class="text-danger">{{ form.card_holder.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                {# "Amal qilish muddati" maydoni olib tashlandi #}
+                {# "Karta turi" maydoni olib tashlandi #}
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="{{ form.is_active.id_for_label }}" class="form-label">{% trans 'Holati' %}</label>
+                        <div class="form-check form-switch"> {# Bootstrap 5 switch uchun form-switch #}
+                            {{ form.is_active }}
+                            <label class="form-check-label {% if form.instance.is_active %}text-success{% else %}text-danger{% endif %}" for="{{ form.is_active.id_for_label }}">
+                                {% if form.instance.is_active %}
+                                    {% trans 'Faol' %}
+                                {% else %}
+                                    {% trans 'Faol emas' %}
+                                {% endif %}
+                            </label>
+                            {% if form.is_active.errors %}
+                            <div class="text-danger">{{ form.is_active.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary">{% trans 'Saqlash' %}</button>
+            <a href="{% url 'custom_admin:payment_card_list' %}" class="btn btn-default">{% trans 'Bekor qilish' %}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

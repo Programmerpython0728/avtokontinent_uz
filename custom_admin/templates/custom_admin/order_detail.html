@@ -1,0 +1,115 @@
+{% extends 'custom_admin/base_admin.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Buyurtma' %} #{{ order.order_number }}{% endblock %}
+{% block page_title %}{% trans 'Buyurtma' %} #{{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>{% trans 'Buyurtma ma\'lumotlari' %}</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>{% trans 'Buyurtma raqami' %}:</strong> {{ order.order_number }}</p>
+                <p><strong>{% trans 'Foydalanuvchi' %}:</strong> {{ order.user.first_name|default:order.user.username }} (ID: {{ order.user.id }})</p>
+                <p><strong>{% trans 'Telefon raqami' %}:</strong> {{ order.user.userprofile.phone_number|default:'-' }}</p>
+                <p><strong>{% trans 'Jami summa' %}:</strong> {{ order.total_amount|floatformat:0 }} {% trans 'so\'m' %}</p>
+                <p><strong>{% trans 'Buyurtma sanasi' %}:</strong> {{ order.created_at|date:"d M Y H:i" }}</p>
+                <p><strong>{% trans 'Yetkazib berish manzili' %}:</strong> {{ order.delivery_address }}</p>
+                {% if order.notes %}
+                    <p><strong>{% trans 'Izohlar' %}:</strong> {{ order.notes }}</p>
+                {% endif %}
+                <p><strong>{% trans 'Oferta qabul qilingan' %}:</strong>
+                    {% if order.oferta_accepted %}
+                        <span class="badge bg-success">{% trans 'Ha' %}</span>
+                    {% else %}
+                        <span class="badge bg-danger">{% trans 'Yo\'q' %}</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>{% trans 'Buyurtma qilingan mahsulotlar' %}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for item in order.orderitem_set.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name_uz }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" class="me-3">
+                        <a href="{% url 'shop:product_detail' item.product.slug %}" class="text-decoration-none text-dark">
+                            {{ item.product.name_uz }}
+                        </a>
+                        <small class="text-muted d-block ms-5">x {{ item.quantity }}</small>
+                    </div>
+                    <span>{{ item.get_total_price|floatformat:0 }} {% trans 'so\'m' %}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>{% trans 'To\'lov cheki' %}</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if order.payment_receipt %}
+                    <img src="{{ order.payment_receipt.url }}" alt="Payment Receipt" class="img-fluid mb-3" style="max-height: 300px; object-fit: contain;">
+                    <p><a href="{{ order.payment_receipt.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-eye"></i> {% trans 'Chekni ko\'rish' %}
+                    </a></p>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> {% trans 'To\'lov cheki yuklangan.' %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> {% trans 'To\'lov cheki yuklanmagan.' %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>{% trans 'Buyurtma holatini o\'zgartirish' %}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.status.id_for_label }}" class="form-label">{{ form.status.label }}</label>
+                        {{ form.status }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-sync-alt"></i> {% trans 'Holatni yangilash' %}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>{% trans 'To\'lov kartasi' %}</h5>
+            </div>
+            <div class="card-body">
+                {% if order.payment_card %}
+                <p><strong>{% trans 'Karta raqami' %}:</strong> {{ order.payment_card.card_number }}</p>
+                <p><strong>{% trans 'Karta egasi' %}:</strong> {{ order.payment_card.card_holder }}</p>
+                {% else %}
+                <p class="text-muted">{% trans 'To\'lov kartasi ma\'lumotlari mavjud emas.' %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-center mt-4">
+    <a href="{% url 'custom_admin:order_list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> {% trans 'Buyurtmalar ro\'yxatiga qaytish' %}
+    </a>
+</div>
+{% endblock %}

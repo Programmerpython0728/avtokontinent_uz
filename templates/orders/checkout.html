@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans 'Buyurtmani rasmiylashtirish' %} - AvtoKontinent.uz{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2>{% trans 'Buyurtmani rasmiylashtirish' %}</h2>
+
+    {% if cart_items %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>{% trans 'Savatdagi mahsulotlar' %}</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for item in cart_items %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name_uz }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" class="me-3">
+                            <a href="{{ item.product.get_absolute_url }}" class="text-decoration-none text-dark">
+                                {{ item.product.name_uz }}
+                            </a>
+                            <small class="text-muted d-block ms-5">x {{ item.quantity }}</small>
+                        </div>
+                        <span>{{ item.get_total_price|floatformat:0 }} {% trans 'so\'m' %}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="card-footer d-flex justify-content-between">
+                    <strong>{% trans 'Jami summa:' %}</strong>
+                    <strong>{{ cart.get_total_price|floatformat:0 }} {% trans 'so\'m' %}</strong>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>{% trans 'Yetkazib berish manzili va izohlar' %}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'orders:checkout' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="delivery_address" class="form-label">{% trans 'Yetkazib berish manzili' %}</label>
+                            <textarea class="form-control" id="delivery_address" name="delivery_address" rows="3" required>{{ request.user.userprofile.address|default:'' }}</textarea>
+                            <div class="form-text">{% trans 'To\'liq manzilingizni kiriting (viloyat, shahar, ko\'cha, uy raqami).' %}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">{% trans 'Izohlar (ixtiyoriy)' %}</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                            <div class="form-text">{% trans 'Qo\'shimcha ma\'lumotlar, masalan, yetkazib berish vaqti.' %}</div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="oferta_accepted" name="oferta_accepted" required>
+                            <label class="form-check-label" for="oferta_accepted">
+                                {% trans 'Men' %} <a href="#" target="_blank">{% trans 'oferta shartlarini' %}</a> {% trans 'o\'qidim va qabul qilaman.' %}
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-check-circle"></i> {% trans 'Buyurtmani tasdiqlash' %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{% trans 'To\'lov ma\'lumotlari' %}</h5>
+                </div>
+                <div class="card-body">
+                    {% if payment_card %}
+                    <p>{% trans 'To\'lov quyidagi karta orqali amalga oshiriladi:' %}</p>
+                    <ul class="list-unstyled">
+                        <li><strong>{% trans 'Karta raqami' %}:</strong> {{ payment_card.card_number }}</li>
+                        <li><strong>{% trans 'Karta egasi' %}:</strong> {{ payment_card.card_holder }}</li>
+                    </ul>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> {% trans 'To\'lovni amalga oshirish uchun ushbu kartaga pul o\'tkazing.' %}
+                        <br>
+                        {% trans 'Buyurtmani tasdiqlaganingizdan so\'ng, to\'lov chekini yuklash uchun buyurtma tafsilotlari sahifasiga yo\'naltirilasiz.' %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> {% trans 'To\'lov kartasi ma\'lumotlari mavjud emas. Iltimos, admin panel orqali to\'lov kartasini qo\'shing.' %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-shopping-cart fa-5x text-muted mb-3"></i>
+        <h4>{% trans 'Savatingiz bo\'sh!' %}</h4>
+        <p class="text-muted">{% trans 'Buyurtma berish uchun avval savatga mahsulot qo\'shing.' %}</p>
+        <a href="{% url 'shop:home' %}" class="btn btn-primary">
+            <i class="fas fa-shopping-bag"></i> {% trans 'Xarid qilishni boshlash' %}
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

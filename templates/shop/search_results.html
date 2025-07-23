@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans 'Qidiruv natijalari' %} - AvtoKontinent.uz{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2>{% trans 'Qidiruv natijalari' %}</h2>
+    <p class="text-muted">
+        {% if query %}
+            {% trans 'Sizning so\'rovingiz bo\'yicha:' %} "<strong>{{ query }}</strong>"
+        {% elif is_featured %}
+            {% trans 'Tavsiya qilingan mahsulotlar' %}
+        {% elif is_popular %}
+            {% trans 'Eng ko\'p sotilgan mahsulotlar' %}
+        {% elif is_most_liked %}
+            {% trans 'Eng ko\'p yoqtirilgan mahsulotlar' %} {# Yangi matn #}
+        {% else %}
+            {% trans 'Barcha mahsulotlar' %}
+        {% endif %}
+    </p>
+
+    {% if products %}
+    <div class="row">
+        {% for product in products %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            {% include 'shop/product_card.html' %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if products.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center mt-4">
+            {% if products.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query }}&page={{ products.previous_page_number }}{% if is_featured %}&featured=1{% endif %}{% if is_popular %}&popular=1{% endif %}{% if is_most_liked %}&most_liked=1{% endif %}"> {# Yangi parametr qo'shildi #}
+                    {% trans 'Oldingi' %}
+                </a>
+            </li>
+            {% endif %}
+            {% for i in products.paginator.page_range %}
+            {% if products.number == i %}
+            <li class="page-item active" aria-current="page">
+                <span class="page-link">{{ i }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query }}&page={{ i }}{% if is_featured %}&featured=1{% endif %}{% if is_popular %}&popular=1{% endif %}{% if is_most_liked %}&most_liked=1{% endif %}"> {# Yangi parametr qo'shildi #}
+                    {{ i }}
+                </a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% if products.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query }}&page={{ products.next_page_number }}{% if is_featured %}&featured=1{% endif %}{% if is_popular %}&popular=1{% endif %}{% if is_most_liked %}&most_liked=1{% endif %}"> {# Yangi parametr qo'shildi #}
+                    {% trans 'Keyingi' %}
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="alert alert-warning text-center py-5">
+        <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+        <h4>{% trans 'Hech qanday mahsulot topilmadi.' %}</h4>
+        <p>{% trans 'Boshqa qidiruv so\'zini sinab ko\'ring yoki katalogga o\'ting.' %}</p>
+        <a href="{% url 'shop:home' %}" class="btn btn-primary">
+            <i class="fas fa-shopping-bag"></i> {% trans 'Katalogga o\'tish' %}
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

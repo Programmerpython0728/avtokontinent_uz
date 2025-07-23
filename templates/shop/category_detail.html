@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ category.name_uz }} - AvtoKontinent.uz{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">{{ category.name_uz }} ({{ category.name_ru }})</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% trans 'Brend bo\'yicha filtrlash' %}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item {% if not current_brand %}active{% endif %}" href="?{% if current_sort %}sort={{ current_sort }}{% endif %}">{% trans 'Barchasi' %}</a></li>
+                    {% for brand in car_brands %}
+                    <li><a class="dropdown-item {% if current_brand == brand.slug %}active{% endif %}" href="?brand={{ brand.slug }}{% if current_sort %}&sort={{ current_sort }}{% endif %}">{{ brand.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% trans 'Saralash' %}:
+                    {% if current_sort == 'price_low' %}{% trans 'Narxi bo\'yicha (o\'suvchi)' %}
+                    {% elif current_sort == 'price_high' %}{% trans 'Narxi bo\'yicha (kamayuvchi)' %}
+                    {% elif current_sort == 'popular' %}{% trans 'Mashhurligi bo\'yicha' %}
+                    {% else %}{% trans 'Eng yangilari' %}
+                    {% endif %}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item {% if not current_sort or current_sort == 'newest' %}active{% endif %}" href="?{% if current_brand %}brand={{ current_brand }}&{% endif %}sort=newest">{% trans 'Eng yangilari' %}</a></li>
+                    <li><a class="dropdown-item {% if current_sort == 'price_low' %}active{% endif %}" href="?{% if current_brand %}brand={{ current_brand }}&{% endif %}sort=price_low">{% trans 'Narxi bo\'yicha (o\'suvchi)' %}</a></li>
+                    <li><a class="dropdown-item {% if current_sort == 'price_high' %}active{% endif %}" href="?{% if current_brand %}brand={{ current_brand }}&{% endif %}sort=price_high">{% trans 'Narxi bo\'yicha (kamayuvchi)' %}</a></li>
+                    <li><a class="dropdown-item {% if current_sort == 'popular' %}active{% endif %}" href="?{% if current_brand %}brand={{ current_brand }}&{% endif %}sort=popular">{% trans 'Mashhurligi bo\'yicha' %}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% if products %}
+    <div class="row">
+        {% for product in products %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            {% include 'shop/product_card.html' %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if products.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center mt-4">
+            {% if products.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.previous_page_number }}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                    {% trans 'Oldingi' %}
+                </a>
+            </li>
+            {% endif %}
+            {% for i in products.paginator.page_range %}
+            {% if products.number == i %}
+            <li class="page-item active" aria-current="page">
+                <span class="page-link">{{ i }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ i }}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                    {{ i }}
+                </a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% if products.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.next_page_number }}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                    {% trans 'Keyingi' %}
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="alert alert-info text-center py-5">
+        <i class="fas fa-info-circle fa-3x mb-3"></i>
+        <h4>{% trans 'Bu kategoriyada mahsulotlar mavjud emas.' %}</h4>
+        <p>{% trans 'Tez orada yangi mahsulotlar qo\'shiladi.' %}</p>
+        <a href="{% url 'shop:home' %}" class="btn btn-primary">
+            <i class="fas fa-shopping-bag"></i> {% trans 'Bosh sahifaga qaytish' %}
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

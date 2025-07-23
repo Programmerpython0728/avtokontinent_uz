@@ -1,0 +1,27 @@
+{% extends 'custom_admin/base_admin.html' %} {# Baza shabloningiz nomiga e'tibor bering #}
+{% load i18n %}
+
+{% block title %}{% trans 'Kartani o‘chirishni tasdiqlash' %}{% endblock %}
+{% block page_title %}{% trans 'Kartani o‘chirishni tasdiqlash' %}{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">{% trans 'O‘chirishni tasdiqlash' %}</h6>
+    </div>
+    <div class="card-body">
+        <p class="mb-4">
+            {% blocktrans %}Siz rostdan ham ushbu kartani o‘chirmoqchimisiz?
+            <br>
+            <strong>Karta raqami: {{ object.card_number }}</strong>
+            <br>
+            <strong>Karta egasi: {{ object.card_holder }}</strong>{% endblocktrans %}
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">{% trans 'Ha, o‘chirilsin' %}</button>
+            <a href="{% url 'custom_admin:payment_card_list' %}" class="btn btn-secondary">{% trans 'Bekor qilish' %}</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
